@@ -20,6 +20,7 @@ async def on_ready():
     await bot.load_extension("cogs.roulette_cog")
     await bot.load_extension("cogs.blackjack_cog")
     await bot.load_extension("cogs.slots_cog")
+    await bot.load_extension("cogs.currency_cog")
     print("The bot has logged in!")  # outputs to local command line
 
 
@@ -52,24 +53,24 @@ async def hello(ctx, member: discord.Member = None):
     await ctx.send(f"Hello, {member.mention}!")
 
 
-@bot.command()
-async def balance(ctx):
-    balance = db.get_balance(session, ctx.author.id, ctx.guild.id)
-    embed = discord.Embed(colour=discord.Colour.green())
-    embed.set_author(name=f"{ctx.author.name} balance: {balance} 🍰")
-    await ctx.send(embed=embed)
+# @bot.command()
+# async def balance(ctx):
+#     balance = db.get_balance(session, ctx.author.id, ctx.guild.id)
+#     embed = discord.Embed(colour=discord.Colour.green())
+#     embed.set_author(name=f"{ctx.author.name} balance: {balance} 🍰")
+#     await ctx.send(embed=embed)
 
 
-@bot.command()
-async def daily(ctx):
-    res = db.update_daily_time(session, ctx.author.id, ctx.guild.id)
-    if res[0]:
-        new_balance = db.update_balance(session, ctx.author.id, ctx.guild.id, 1000)
-        await ctx.send(
-            f"{ctx.author.mention}\nDaily reward received! You've got {new_balance}🍰"
-        )
-    else:
-        await ctx.send(f"{ctx.author.mention}\nYou need to wait {res[1]}")
+# @bot.command()
+# async def daily(ctx):
+#     res = db.update_daily_time(session, ctx.author.id, ctx.guild.id)
+#     if res[0]:
+#         new_balance = db.update_balance(session, ctx.author.id, ctx.guild.id, 1000)
+#         await ctx.send(
+#             f"{ctx.author.mention}\nDaily reward received! You've got {new_balance}🍰"
+#         )
+#     else:
+#         await ctx.send(f"{ctx.author.mention}\nYou need to wait {res[1]}")
 
 
 # # slot game
@@ -112,30 +113,30 @@ async def choice(ctx, *, message_text=""):
         await ctx.send(f"{ctx.author.mention}\nThe result is {answer}")
 
 
-@bot.command()
-async def steal(ctx, member):
-    if not member:
-        await ctx.send(f"You need to mention someone")
-    else:
-        balance = db.get_balance(session, member.id, ctx.guild.id)
-        if random.random() > 0.5:
-            if not balance:
-                await ctx.send(f"This user is broke")
-                return
-            balance = random.randint(1, balance // 2)
-            db.update_balance(session, member.id, ctx.guild.id, -balance)
-            db.update_balance(session, ctx.author.id, ctx.guild.id, +balance)
-            await ctx.send(
-                f"{ctx.author.mention}\nYou seccessfully stole {balance} 🍰 from {member.mention}"
-            )
-        else:
-            if not balance:
-                await ctx.send(
-                    f"This user is broke AND you've got caught, it's certified bruh moment"
-                )
-            else:
-                await ctx.send(f"You've got caught, you'll fined with 250 🍰")
-            db.update_balance(session, ctx.author.id, ctx.guild.id, -250)
+# @bot.command()
+# async def steal(ctx, member):
+#     if not member:
+#         await ctx.send(f"You need to mention someone")
+#     else:
+#         balance = db.get_balance(session, member.id, ctx.guild.id)
+#         if random.random() > 0.5:
+#             if not balance:
+#                 await ctx.send(f"This user is broke")
+#                 return
+#             balance = random.randint(1, balance // 2)
+#             db.update_balance(session, member.id, ctx.guild.id, -balance)
+#             db.update_balance(session, ctx.author.id, ctx.guild.id, +balance)
+#             await ctx.send(
+#                 f"{ctx.author.mention}\nYou seccessfully stole {balance} 🍰 from {member.mention}"
+#             )
+#         else:
+#             if not balance:
+#                 await ctx.send(
+#                     f"This user is broke AND you've got caught, it's certified bruh moment"
+#                 )
+#             else:
+#                 await ctx.send(f"You've got caught, you'll fined with 250 🍰")
+#             db.update_balance(session, ctx.author.id, ctx.guild.id, -250)
 
 
 session = db.connect_db()
