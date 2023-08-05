@@ -19,6 +19,7 @@ async def on_ready():
     await bot.load_extension("cogs.help_cog")
     await bot.load_extension("cogs.roulette_cog")
     await bot.load_extension("cogs.blackjack_cog")
+    await bot.load_extension("cogs.slots_cog")
     print("The bot has logged in!")  # outputs to local command line
 
 
@@ -71,33 +72,33 @@ async def daily(ctx):
         await ctx.send(f"{ctx.author.mention}\nYou need to wait {res[1]}")
 
 
-# slot game
-@bot.command()
-async def slots(ctx):
-    balance = db.get_balance(session, ctx.author.id, ctx.guild.id)
-    if balance - 100 < 0:
-        await ctx.send(f"{ctx.author.mention}\nYou are broke🍰")
-    else:
-        game = slot_game.SlotMachine()
-        result = game.roll_machine()
-        slot_image = ""
-        reward = result[0]
-        for line in result[1]:
-            slot_image += f"|{line[0]}|{line[1]}|{line[2]}|\n"
-        if reward == 1:
-            await ctx.send(
-                f"{ctx.author.mention}\nYou've used 100 🍰 to spin the slots...\n"
-                + slot_image
-                + f"You've lost 100 🍰\n"
-            )
-            reward -= 101
-        else:
-            await ctx.send(
-                f"{ctx.author.mention}\nYou've used 100 🍰 to spin the slots...\n"
-                + slot_image
-                + f"You've won {result[0]} 🍰\n"
-            )
-        db.update_balance(session, ctx.author.id, ctx.guild.id, reward)
+# # slot game
+# @bot.command()
+# async def slots(ctx):
+#     balance = db.get_balance(session, ctx.author.id, ctx.guild.id)
+#     if balance - 100 < 0:
+#         await ctx.send(f"{ctx.author.mention}\nYou are broke🍰")
+#     else:
+#         game = slot_game.SlotMachine()
+#         result = game.roll_machine()
+#         slot_image = ""
+#         reward = result[0]
+#         for line in result[1]:
+#             slot_image += f"|{line[0]}|{line[1]}|{line[2]}|\n"
+#         if reward == 1:
+#             await ctx.send(
+#                 f"{ctx.author.mention}\nYou've used 100 🍰 to spin the slots...\n"
+#                 + slot_image
+#                 + f"You've lost 100 🍰\n"
+#             )
+#             reward -= 101
+#         else:
+#             await ctx.send(
+#                 f"{ctx.author.mention}\nYou've used 100 🍰 to spin the slots...\n"
+#                 + slot_image
+#                 + f"You've won {result[0]} 🍰\n"
+#             )
+#         db.update_balance(session, ctx.author.id, ctx.guild.id, reward)
 
 
 # takes arguments in message and returns random element from arguments
